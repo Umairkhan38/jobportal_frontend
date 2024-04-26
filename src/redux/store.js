@@ -6,6 +6,8 @@ import { createJobTypeReducer, loadJobTypeReducer } from './reducers/jobTypeRedu
 import { allUserReducer, userApplyJobReducer, userReducerLogout, userReducerProfile, userReducerSignIn, userReducerSignUp } from './reducers/userReducer';
 // import { loadJobTypeReducer } from './reducers/jobTypeReducer';
 
+
+
 //combine reducers
 const reducer = combineReducers({
     loadJobs: loadJobReducer,

@@ -20,6 +20,7 @@ const SingleJob = () => {
 
 
     const {user} = useSelector(state=>state.userProfile);
+    
     console.log("user profile is ",user)
     
     if(!user?.imageUrl){

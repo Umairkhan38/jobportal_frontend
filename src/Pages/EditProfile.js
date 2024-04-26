@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux'
 import { userSignUpAction, userUpdateAction } from '../redux/actions/userAction'
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { userProfileAction } from '../redux/actions/userAction';
 import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
@@ -38,52 +38,68 @@ const EditProfile = () => {
     
     const { user } = useSelector(state => state.userProfile);
     const { userInfo } = useSelector(state => state.signIn);
-
+    const [isLoading ,  setIsLoading] = useState(true);
     const params = useParams()
     const dispatch = useDispatch();
     const navigate=useNavigate();
 
-    if(!userInfo){
-        navigate('/login');
-    }
+
+    useEffect(() => {
+        if(user){
+            setIsLoading(false);
+        }
+    }, [user])
+
+    useEffect(() => {
+        if (!userInfo) {
+            navigate('/login');
+        }
+    }, [userInfo, navigate]);
+
+    console.log("user profile is ",user);
+
+  
+
+
 
  
+
     const handleFileChange = (event) => {
         formik.setFieldValue('imgFile', event.target.files[0]);
     };
-    
 
-    const formik = useFormik({
+
+   const formik = useFormik({
         initialValues: {
-          firstName: `${user?.firstName}`,
-          lastName: `${user?.lastName}`,
-          email: `${user?.email}`,
-          imgFile:null
+            firstName: user ? user.firstName : '',
+            lastName: user ? user.lastName : '',
+            email: user ? user.email : '',
+            imgFile: null
         },
-
         validationSchema: validationSchema,
-        onSubmit: async(values, actions) => {
-
-            try{
-
+        onSubmit: async (values, actions) => {
+            try {
                 const formData = new FormData();
                 formData.append('imgFile', values.imgFile);
                 formData.append('firstName', values.firstName);
                 formData.append('lastName', values.lastName);
                 formData.append('email', values.email);
-                const {data} = axios.patch(`/api/user/edit/${params.id}`,formData);
+                const { data } = await axios.patch(`http://localhost:8000/api/user/edit/${params.id}`, formData,{withCredentials: true, credentials:'include'});
+                console.log("formData response is ",data)
                 toast.success("Your Profile Updated Successfully!");
                 setTimeout(() => {
                     navigate('/');
                 }, 2000);
-            }
-            catch(err){
+            } catch (err) {
                 toast.error(err);
-
             }
-
         }
     });
+
+
+    if(isLoading){
+        return <h1>Loading...</h1>
+    }
 
 
 

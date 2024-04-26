@@ -118,11 +118,12 @@ export const userUpdateAction = (user) => async (dispatch) => {
 export const userProfileAction = () => async (dispatch) => {
     dispatch({ type: USER_LOAD_REQUEST });
     try {
-        const { data } = await axios.get("http://localhost:8000/api/me", {withCredentials: true, credentials: 'include'});
-        console.log("the data is",data)
+        const { data } = await axios.get("http://localhost:8000/api/me", {withCredentials: true, credentials:'include'});
+        console.log("me api data is ",data)
+
         dispatch({
             type: USER_LOAD_SUCCESS,
-            payload: data
+            payload:data
         });
 
     } catch (error) {
