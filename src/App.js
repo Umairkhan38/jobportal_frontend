@@ -99,6 +99,8 @@ const App = () => {
                         </Routes>
 
                          {/* Move the conditional rendering outside of the <Routes> component */}
+
+       { userInfo&& <div>     
         {!bot ? (
           <img
             src={chat}
@@ -136,7 +138,8 @@ const App = () => {
             />
           </div>
         )}
-                          
+        </div>
+                          }
                     </BrowserRouter>
                 </ProSidebarProvider>
             </ThemeProvider>

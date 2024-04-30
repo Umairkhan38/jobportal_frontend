@@ -12,11 +12,14 @@ import { userApplyJobAction } from '../redux/actions/userAction'
 import ReactPlayer from 'react-player';
 import { toast } from 'react-toastify'
 
+
 const SingleJob = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate()
     const { singleJob, loading } = useSelector(state => state.singleJob)
     const { userInfo } = useSelector(state => state.signIn);
+    const [course, setCourse] = useState([]);
+
 
 
     const {user} = useSelector(state=>state.userProfile);
@@ -29,25 +32,76 @@ const SingleJob = () => {
     
     const { id } = useParams();
 
-    
-    const arr=[{title:"Senior Java Developer",url:'https://youtube.com/playlist?list=PLu0W_9lII9agS67Uits0UnJyrYiXhDS6q&feature=shared'},
-    {title:'dotNet Developer', url:'https://youtube.com/playlist?list=PL18HZjtdIA4DiYGQj1zst6myBAVE3wgMg&feature=shared'},
-    {title:'DevOps', url:'https://youtube.com/playlist?list=PLdpzxOOAlwvIKMhk8WhzN1pYoJ1YU8Csa&feature=shared'},
-    {title:'MERN_STACK Developer', url:'https://youtube.com/playlist?list=PLBuAVfmfL97YHkuJcVZrrGzBKOh80e0ru&feature=shared'},
-    {title:'Frontend Developer', url:'https://youtube.com/playlist?list=PLbtI3_MArDOkNtOan8BQkG6P8wf6pNVz-&feature=shared'},
-    {title:"Automation Tester - Cypress", url:"https://youtube.com/playlist?list=PL8VbCbavWfeG_QP9yIylsXOCb8CJunKU_&feature=shared"},
-    {title:'Node.js Application Developer', url:'https://youtube.com/playlist?list=PL8p2I9GklV456iofeMKReMTvWLr7Ki9At&feature=shared'},
-    {title:"UI/UX Developer",url:"https://youtube.com/playlist?list=PLvDSYqFjjGrjIDkeaXwQPwBVKR3D4vsAH&feature=shared"}]
-    
+   
 
-     
-     useEffect(() => {
-         dispatch(jobLoadSingleAction(id));
-         if(userInfo){
-            toast.success('If You want, you can update your resume in edit section before applying!')
-        }
+    // Define your API key and the title of the video you want to fetch
+    const apiKey = 'AIzaSyCQDRKgIbxE-wwNJvAW6rf-oIm1slZGLtw';
+    console.log("singlejob is ",singleJob);
+    const playlistTitle = singleJob?.title;
+
     
-    }, [id]);
+    useEffect(() => {
+      dispatch(jobLoadSingleAction(id));
+  }, [dispatch, id]); // Only run when id changes
+  
+
+  useEffect(() => {
+      if (!playlistTitle) return; // Ensure there's a title before fetching
+  
+      const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=playlist&q=${encodeURIComponent(playlistTitle)}`;
+  
+      fetch(url)
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Network response was not ok');
+              }
+              return response.json(); // Return the parsed JSON
+          })
+          .then(data => {
+              // Handle the response data
+              setCourse(data.items);
+              console.log("response is ", data);
+              console.log("course is ",course);
+          })
+          .catch(error => {
+              // Handle errors
+              console.error('There was a problem with the fetch operation:', error);
+          });
+  }, [playlistTitle]);
+
+//     useEffect(() => {
+//         dispatch(jobLoadSingleAction(id));
+//         if(userInfo){
+//             toast.success('If You want, you can update your resume in edit section before applying!')
+//         }
+        
+//         // Construct the URL for fetching the playlist data
+//         // if(singleJob){
+//         const url = `https://www.googleapis.com/youtube/v3/search?key=${apiKey}&part=snippet&type=playlist&q=${encodeURIComponent(playlistTitle)}`;
+
+
+// // Make a GET request to the YouTube Data API
+// fetch(url)
+//   .then(response => {
+//     if (!response.ok) {
+//       throw new Error('Network response was not ok');
+//     }
+//     const res = response.json();
+//     // console.log("course is ",course)
+//   })
+//   .then(data => {
+//     // Handle the response data
+//     setCourse(data)
+//     console.log("response is ",data)
+//     console.log(data);
+//   })
+//   .catch(error => {
+//     // Handle errors
+//     console.error('There was a problem with the fetch operation:', error);
+//   });
+
+//         // }
+//     }, [id]);
      
  
     
@@ -85,27 +139,27 @@ const SingleJob = () => {
                                 {
                                     loading ? <LoadingBox /> :
 
+                                    singleJob && (
                                         <Card>
-                                            <CardContent>
-                                                <Typography variant="h5" component="h3">
-                                                    {singleJob && singleJob.title}
-                                                </Typography>
-                                                <Typography variant="body2">
-                                                    <Box component="span" sx={{ fontWeight: 700 }}>Salary</Box>: ${singleJob && singleJob.salary}
-                                                </Typography>
-                                                <Typography variant="body2">
-                                                    <Box component="span" sx={{ fontWeight: 700 }}>Category</Box>: {singleJob && singleJob.jobType ? singleJob.jobType.jobTypeName : "No category"}
-                                                </Typography>
-                                                <Typography variant="body2">
-                                                    <Box component="span" sx={{ fontWeight: 700 }}>Location</Box>: {singleJob && singleJob.location}
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ pt: 2 }}>
-                                                    {/* <h3>Job description:</h3> */}
-                                                    {singleJob && singleJob.description}
-                                                </Typography>
-                                            </CardContent>
-                                           
+                                          <CardContent>
+                                            <Typography variant="h5" component="h3">
+                                              {singleJob.title}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                              <Box component="span" sx={{ fontWeight: 700 }}>Salary</Box>: ${singleJob.salary}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                              <Box component="span" sx={{ fontWeight: 700 }}>Category</Box>: {singleJob.jobType ? singleJob.jobType.jobTypeName : "No category"}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                              <Box component="span" sx={{ fontWeight: 700 }}>Location</Box>: {singleJob.location}
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ pt: 2 }}>
+                                              {singleJob.description}
+                                            </Typography>
+                                          </CardContent>
                                         </Card>
+                                      )
                                 }
                             </Box>  
                             <Box sx={{ flex: 1, p: 2 }}>
@@ -119,16 +173,14 @@ const SingleJob = () => {
                           <h2>Recommended Free Courses for you to get Skillup!</h2>      
                            <hr />
 
-                        <Box style={{margin:'15px'}}>{
-                        arr?.map(elem=>{
-                            if(elem?.title===singleJob?.title){
-                                return <ReactPlayer url={elem.url} />
-                            }
-
-                        })
-                        }
-                        </Box>
-                        
+                           <Box style={{display:"flex", flexWrap:"wrap"}}>
+                           {course.map(item => {
+                              const playlistId = item.id.playlistId;
+                              const list = `https://www.youtube.com/playlist?list=${playlistId}`;
+                              return <ReactPlayer style={{ margin: '15px 5px' }} url={list} key={playlistId} />;
+                            })}
+                                </Box>
+                                                        
 
                     </Container>
                 </Box>
